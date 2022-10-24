@@ -24,18 +24,25 @@ import javax.imageio.ImageIO;
 public class Ui extends javax.swing.JFrame implements KeyListener {
 
     private Dimension FRAME_SIZE;
-
     private BufferedImage BUFFERED_IMAGE = new BufferedImage(50, 50, BufferedImage.TYPE_INT_RGB);
-
     private Graphics2D G2D;
-
     private static String imagesPath = "src/res/";
-
-    int CAR_POSITION_X, CAR_POSITION_Y;
-
-    int ROAD_X, ROAD_Y;
-
-    boolean P = false;
+    private int CAR_POSITION_X, CAR_POSITION_Y;
+    private int ROAD_X, ROAD_Y;
+    private boolean KEY_PRESSED = false;
+    private sound SOUND = new sound();
+    private BufferedImage ROAD_1 = null;
+    private BufferedImage ROAD_2 = null;
+    private BufferedImage CAR = null;
+    private Image IR1;
+    private Image IR2;
+    private Image IC;
+    private int SR1X;
+    private int SR1Y;
+    private int SR2X;
+    private int SR2Y;
+    private int SCX;
+    private int SCY;
 
     /**
      * Creates new form Ui
@@ -48,7 +55,11 @@ public class Ui extends javax.swing.JFrame implements KeyListener {
         ROAD_X = ROAD_Y = -999;
         CAR_POSITION_X = CAR_POSITION_Y = 300;
 
-        updater();
+        updtaeGraphics();
+
+        SOUND.setFile(0);
+        SOUND.play();
+        SOUND.loop();
     }
 
     /**
@@ -133,14 +144,14 @@ public class Ui extends javax.swing.JFrame implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        P = true;
+        KEY_PRESSED = true;
         movecar(e);
 
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        P = false;
+        KEY_PRESSED = false;
     }
 
 
@@ -156,40 +167,38 @@ public class Ui extends javax.swing.JFrame implements KeyListener {
         Graphics2D G2 = (Graphics2D) g;
         G2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        BufferedImage road = null;
-        BufferedImage cross_road = null;
-        BufferedImage car = null;
         try {
-            road = ImageIO.read(new File(imagesPath + "1.png"));
-            cross_road = ImageIO.read(new File(imagesPath + "2.png"));
-            car = ImageIO.read(new File(imagesPath + "3.png"));
+            ROAD_1 = ImageIO.read(new File(imagesPath + "1.png"));
+            ROAD_2 = ImageIO.read(new File(imagesPath + "2.png"));
+            CAR = ImageIO.read(new File(imagesPath + "3.png"));
         } catch (IOException ex) {
 
         }
-        int scaleXroad = (int) (road.getWidth());
-        int scaleYroad = (int) (road.getHeight());
 
-        int scaleXcroad = (int) (cross_road.getWidth());
-        int scaleYcroad = (int) (cross_road.getHeight());
+        SR1X = (int) (ROAD_1.getWidth());
+        SR1Y = (int) (ROAD_1.getHeight());
 
-        int scaleXcar = (int) (car.getWidth());
-        int scaleYcar = (int) (car.getHeight());
+        SR2X = (int) (ROAD_2.getWidth());
+        SR2Y = (int) (ROAD_2.getHeight());
 
-        Image image_road = road.getScaledInstance(scaleXroad, scaleYroad, Image.SCALE_SMOOTH);
+        SCX = (int) (CAR.getWidth());
+        SCY = (int) (CAR.getHeight());
 
-        Image image_cross_road = cross_road.getScaledInstance(scaleXcroad, scaleYcroad, Image.SCALE_SMOOTH);
+        IR1 = ROAD_1.getScaledInstance(SR1X, SR1Y, Image.SCALE_SMOOTH);
 
-        Image image_car = car.getScaledInstance(scaleXcar, scaleYcar, Image.SCALE_SMOOTH);
+        IR2 = ROAD_2.getScaledInstance(SR2X, SR2Y, Image.SCALE_SMOOTH);
+
+        IC = CAR.getScaledInstance(SCX, SCY, Image.SCALE_SMOOTH);
 
         BUFFERED_IMAGE = (BufferedImage) createImage(FRAME_SIZE.width, FRAME_SIZE.height);
 
-        BUFFERED_IMAGE.getGraphics().drawImage(image_road, 0, 0, null);
+        BUFFERED_IMAGE.getGraphics().drawImage(IR1, 0, 0, null);
 
         if (ROAD_Y >= -499 && ROAD_X >= -499) {
-            BUFFERED_IMAGE.getGraphics().drawImage(image_cross_road, ROAD_X, ROAD_Y, null);
+            BUFFERED_IMAGE.getGraphics().drawImage(IR2, ROAD_X, ROAD_Y, null);
         }
 
-        BUFFERED_IMAGE.getGraphics().drawImage(image_car, CAR_POSITION_X, CAR_POSITION_Y, null);
+        BUFFERED_IMAGE.getGraphics().drawImage(IC, CAR_POSITION_X, CAR_POSITION_Y, null);
 
         G2D = BUFFERED_IMAGE.createGraphics();
 
@@ -197,12 +206,12 @@ public class Ui extends javax.swing.JFrame implements KeyListener {
 
     }
 
-    int count = 1, c = 1;
+    int RMC = 1, R = 1;
 
     public void movecar(KeyEvent e) {
 
         Thread KEP = new Thread(() -> {
-            while (P) {
+            while (KEY_PRESSED) {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_UP:
                         if (CAR_POSITION_Y < 16) {
@@ -245,21 +254,21 @@ public class Ui extends javax.swing.JFrame implements KeyListener {
 
     }
 
-    public void updater() {
+    public void updtaeGraphics() {
         Thread GT = new Thread(() -> {
             for (;;) {
-                this.moveRoad(count);
-                while (c <= 1) {
+                this.moveRoad(RMC);
+                while (R <= 1) {
                     this.repaint();
                     try {
                         Thread.sleep(5);
                     } catch (Exception e) {
                         System.out.println(e);
                     }
-                    c++;
+                    R++;
                 }
-                c = 1;
-                count++;
+                R = 1;
+                RMC++;
 
             }
         });
