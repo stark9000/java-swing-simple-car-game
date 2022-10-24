@@ -5,10 +5,13 @@
  */
 package simplecargame;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -44,6 +47,10 @@ public class Ui extends javax.swing.JFrame implements KeyListener {
     private int SCX;
     private int SCY;
 
+    private Rectangle R1;
+    private Rectangle R2 = new Rectangle(0, 0, 50, 50);
+    private Rectangle R3 = new Rectangle(0, 0, 50, 50);
+
     /**
      * Creates new form Ui
      */
@@ -57,6 +64,9 @@ public class Ui extends javax.swing.JFrame implements KeyListener {
 
         updtaeGraphics();
 
+        // music is from beepbox.
+        //https://t.co/7nJDCH5GEB
+        //credis go to : https://t.co/1o4NMo9QZj
         SOUND.setFile(0);
         SOUND.play();
         SOUND.loop();
@@ -184,6 +194,8 @@ public class Ui extends javax.swing.JFrame implements KeyListener {
         SCX = (int) (CAR.getWidth());
         SCY = (int) (CAR.getHeight());
 
+        R1 = new Rectangle(0, 0, (int) (CAR.getWidth() - 12), (int) (CAR.getHeight()));
+
         IR1 = ROAD_1.getScaledInstance(SR1X, SR1Y, Image.SCALE_SMOOTH);
 
         IR2 = ROAD_2.getScaledInstance(SR2X, SR2Y, Image.SCALE_SMOOTH);
@@ -200,7 +212,23 @@ public class Ui extends javax.swing.JFrame implements KeyListener {
 
         BUFFERED_IMAGE.getGraphics().drawImage(IC, CAR_POSITION_X, CAR_POSITION_Y, null);
 
+        R1.setLocation(CAR_POSITION_X + 6, CAR_POSITION_Y);
+        R2.setLocation(150, 100);
+        R3.setLocation(300, 200);
+
         G2D = BUFFERED_IMAGE.createGraphics();
+        G2D.setPaint(Color.RED);
+        G2D.draw(R1);
+        G2D.draw(R2);
+        G2D.draw(R3);
+
+        if (R1.intersects(R2) || R1.intersects(R3)) {
+            G2D.setColor(Color.RED);
+            G2D.setFont(new Font("default", Font.BOLD, 16));
+            G2D.drawString("collision !", 200, 50);
+        } else {
+
+        }
 
         G2.drawImage(BUFFERED_IMAGE, 0, 0, this);
 
@@ -288,6 +316,5 @@ public class Ui extends javax.swing.JFrame implements KeyListener {
         if (ROAD_X == 0 && ROAD_Y == 499) {
             ROAD_X = ROAD_Y = -999;
         }
-
     }
 }
