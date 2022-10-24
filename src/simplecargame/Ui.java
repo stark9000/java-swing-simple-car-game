@@ -35,6 +35,8 @@ public class Ui extends javax.swing.JFrame implements KeyListener {
 
     int ROAD_X, ROAD_Y;
 
+    boolean P = false;
+
     /**
      * Creates new form Ui
      */
@@ -131,27 +133,14 @@ public class Ui extends javax.swing.JFrame implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_UP:
-                CAR_POSITION_Y = CAR_POSITION_Y - 5;
-                break;
-            case KeyEvent.VK_DOWN:
-                CAR_POSITION_Y = CAR_POSITION_Y + 5;
-                break;
-            case KeyEvent.VK_LEFT:
-                CAR_POSITION_X = CAR_POSITION_X - 5;
-                break;
-            case KeyEvent.VK_RIGHT:
-                CAR_POSITION_X = CAR_POSITION_X + 5;
-                break;
-            default:
-                break;
-        }
+        P = true;
+        movecar(e);
+
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-
+        P = false;
     }
 
 
@@ -209,6 +198,52 @@ public class Ui extends javax.swing.JFrame implements KeyListener {
     }
 
     int count = 1, c = 1;
+
+    public void movecar(KeyEvent e) {
+
+        Thread KEP = new Thread(() -> {
+            while (P) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_UP:
+                        if (CAR_POSITION_Y < 16) {
+                            return;
+                        }
+                        CAR_POSITION_Y = CAR_POSITION_Y - 2;
+
+                        break;
+                    case KeyEvent.VK_DOWN:
+                        if (CAR_POSITION_Y > 328) {
+                            return;
+                        }
+                        CAR_POSITION_Y = CAR_POSITION_Y + 2;
+                        break;
+                    case KeyEvent.VK_LEFT:
+                        if (CAR_POSITION_X < 110) {
+                            return;
+                        }
+                        CAR_POSITION_X = CAR_POSITION_X - 2;
+
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                        if (CAR_POSITION_X > 310) {
+                            return;
+                        }
+                        CAR_POSITION_X = CAR_POSITION_X + 2;
+                        break;
+                    default:
+                        break;
+                }
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException ex) {
+
+                }
+
+            }
+        });
+        KEP.start();
+
+    }
 
     public void updater() {
         Thread GT = new Thread(() -> {
